@@ -72,8 +72,8 @@ app.whenReady().then(async () => {
 
   // Cria a janela principal
   win = new BrowserWindow({
-    width: 1980,
-    height: 1080,
+    width: 1024,
+    height: 768,
     x: secondaryDisplay.bounds.x,
     y: secondaryDisplay.bounds.y,
     // fullscreen: true,
@@ -103,8 +103,8 @@ app.whenReady().then(async () => {
       win.setBounds({
         x: secondaryBounds.x,
         y: secondaryBounds.y,
-        width: 1980,
-        height: 1080,
+        width: 1024,
+        height: 768,
       });
       win.setFullScreen(true);
     }
@@ -119,8 +119,8 @@ app.whenReady().then(async () => {
       win.setBounds({
         x: display.bounds.x,
         y: display.bounds.y,
-        width: 1980,
-        height: 1080,
+        width: 1024,
+        height: 768,
       });
       win.setFullScreen(true);
     }
@@ -154,10 +154,9 @@ async function writeFile(filePath, fileName, data) {
 // Função para salvar uma imagem
 async function saveImage(fileName, imgData, plcData) {
   const basePath = path.join(app.getPath("pictures"), "sistema-visao-fpt");
-  const picturesDir = setFolderPath(basePath);
-  const filePath = path.join(picturesDir, fileName);
+  const filePath = path.join(basePath, fileName);
 
-  await createFolder(picturesDir);
+  await createFolder(basePath);
   await writeFile(filePath, fileName, imgData);
   return {
     fileName,

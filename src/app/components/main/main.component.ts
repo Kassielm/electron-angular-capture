@@ -53,7 +53,7 @@ export class MainComponent implements OnInit {
       if (!iframe) {
         throw new Error('Iframe não encontrado');
       }
-      const recort = { x: 330, y: 85, width: 1535, height: 980 };
+      const recort = { x: 0, y: 0, width: 1024, height: 768 };
       const imgData = await window.electron.capturePage(recort);
       const fileName = `${Date.now()}.png`;
       window.electron.sendCaptureResponse({ fileName, imgData });
