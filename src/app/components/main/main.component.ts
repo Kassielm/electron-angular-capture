@@ -1,8 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, NgZone, OnInit } from '@angular/core';
 import { ScreenData } from '../../../types/screenData.type';
-import { TriggerData } from '../../../types/triggerData.type';
-import { StatusLora } from '../../../types/statusLora.type';
 
 // declaração de interface do electron
 declare global {
@@ -20,8 +18,6 @@ declare global {
         imgData: string;
         error?: string;
       }) => void;
-      onTriggerMessage: (callback: (event: Event, data: TriggerData) => void) => void;
-      onTriggerStatusLora: (callback: (event: Event, data: StatusLora) => void) => void;
     };
   }
 }
@@ -34,49 +30,21 @@ declare global {
   styleUrl: './main.component.scss',
 })
 export class MainComponent implements OnInit {
-  statusText: string = 'Status Inspeção';
-  matricula!: string;
 
   constructor(private zone: NgZone) {}
 
   ngOnInit() {
-    this.listenFromNode();
-  }
-
-  private listenFromNode() {
     this.screenData();
-    this.triggerMessage();
-    this.statusLora();
-  }
-
-  private statusLora() {
-    window.electron.onTriggerStatusLora((_event: Event, data: StatusLora) =>
-      data.status
-        ? this.setMessage('Sistema de visão habilitado')
-        : this.setMessage('Sistema de visão desabilitado')
-    );
-  }
-
-  private triggerMessage() {
-    window.electron.onTriggerMessage((_event: Event, data: TriggerData) => {
-      if (data.leitura) this.setMessage('Leitura do código realizada');
-    });
   }
 
   private screenData() {
-    window.electron.onTriggerCapture((_event: Event, data: ScreenData) =>
-      this.setScreenData(data)
+    window.electron.onTriggerCapture((_event: Event) =>
+      this.setScreenData()
     );
   }
 
-  private setScreenData(data: ScreenData) {
-    this.matricula = data.matricula;
+  private setScreenData() {
     this.captureIframe();
-    this.setMessage(data.status);
-  }
-
-  setMessage(text: string) {
-    this.zone.run(() => (this.statusText = text));
   }
 
   async captureIframe() {
@@ -87,7 +55,7 @@ export class MainComponent implements OnInit {
       }
       const recort = { x: 330, y: 85, width: 1535, height: 980 };
       const imgData = await window.electron.capturePage(recort);
-      const fileName = `${this.matricula}_${Date.now()}.png`;
+      const fileName = `${Date.now()}.png`;
       window.electron.sendCaptureResponse({ fileName, imgData });
     } catch (err: any) {
       window.electron.sendCaptureResponse({

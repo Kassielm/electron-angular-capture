@@ -35,10 +35,8 @@ const appServer = express();
 appServer.use(express.json({ strict: false }));
 
 // Configura rotas estáticas para diretórios de imagens
-const picturesBasePath = path.join(app.getPath("pictures"), "sistema-visao-casquilhos");
-appServer.use("/nok", express.static(path.join(picturesBasePath, "nok")));
-appServer.use("/ok", express.static(path.join(picturesBasePath, "ok")));
-appServer.use("/undefined", express.static(path.join(picturesBasePath, "undefined")));
+const picturesBasePath = path.join(app.getPath("pictures"), "sistema-visao-fpt");
+appServer.use("/image", express.static(path.join(picturesBasePath)));
 
 // Função para obter o monitor secundário
 async function getSecondaryMonitor() {
@@ -78,7 +76,7 @@ app.whenReady().then(async () => {
     height: 1080,
     x: secondaryDisplay.bounds.x,
     y: secondaryDisplay.bounds.y,
-    fullscreen: true,
+    // fullscreen: true,
     icon: "favicon.ico",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -91,7 +89,7 @@ app.whenReady().then(async () => {
   // Carrega o arquivo HTML
   win.loadURL(
     url.format({
-      pathname: path.join(__dirname, "dist/sistema-visao-casquilhos/browser/index.html"),
+      pathname: path.join(__dirname, "dist/sistema-visao-fpt/browser/index.html"),
       protocol: "file:",
       slashes: true,
     })
@@ -130,20 +128,8 @@ app.whenReady().then(async () => {
 
   // Inicia o servidor Express na porta 3000
   appServer.listen(3000);
+  console.log("servidor rodando na 3000");
 });
-
-// Função para definir o caminho da pasta com base no status
-function setFolderPath(status) {
-  const basePath = path.join(app.getPath("pictures"), "sistema-visao-casquilhos");
-  switch (status) {
-    case true:
-      return path.join(basePath, "ok");
-    case false:
-      return path.join(basePath, "nok");
-    default:
-      return path.join(basePath, "undefined");
-  }
-}
 
 // Função para criar uma pasta recursivamente
 async function createFolder(folderPath) {
@@ -167,7 +153,8 @@ async function writeFile(filePath, fileName, data) {
 
 // Função para salvar uma imagem
 async function saveImage(fileName, imgData, plcData) {
-  const picturesDir = setFolderPath(plcData.inspecao);
+  const basePath = path.join(app.getPath("pictures"), "sistema-visao-fpt");
+  const picturesDir = setFolderPath(basePath);
   const filePath = path.join(picturesDir, fileName);
 
   await createFolder(picturesDir);
@@ -187,31 +174,10 @@ appServer.post("/capture", (req, res) => {
       return res.status(500).send(response.error);
     }
     const { imgData, fileName } = response;
-    if (plcData.salvar_dados === true) {
-      const result = await saveImage(fileName, imgData, plcData);
-      return res.status(202).send(result);
-    }
-    return res.status(400).send({ error: "Inspeção Nok" });
+    const result = await saveImage(fileName, imgData, plcData);
+    return res.status(202).send(result);
   });
   win.webContents.send("trigger-capture", req.body);
-});
-
-appServer.post("/message", (req, res) => {
-  try {
-    win.webContents.send("message", req.body);
-    return res.status(202).send({ ok: "ok" });
-  } catch {
-    return res.status(500).send({ error: "Erro ao identificar leitura" });
-  }
-});
-
-appServer.post("/status-lora", (req, res) => {
-  try {
-    win.webContents.send("status-lora", req.body);
-    return res.status(202).send({ ok: "ok" });
-  } catch {
-    return res.status(500).send({ error: "Erro ao identificar o status" });
-  }
 });
 
 // Manipulador IPC para captura de página

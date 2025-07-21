@@ -1,6 +1,3 @@
 <div class="main">
-  <div [ngClass]="{'text-green' : statusText === 'Inspeção Ok', 'text-red' : statusText === 'Inspeção Nok', 'text-blue' : statusText === 'Leitura do código realizada'}" class="message">
-    <h3 id="info"> {{statusText}}</h3>
-  </div>
-    <img id="iframe" src="http://172.18.176.210:60000/api/v1/script_stream" frameborder="0"/>
+    <img id="iframe" src="http://192.168.100.61:60000/api/v1/script_stream" frameborder="0"/>
 </div>

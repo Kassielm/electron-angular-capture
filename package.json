@@ -1,5 +1,5 @@
 {
-  "name": "sistema-visao-casquilhos",
+  "name": "sistema-visao-fpt",
   "description": "Sistema de Visão Casquilhos",
   "main": "main.js",
   "version": "1.0.0",
@@ -10,10 +10,10 @@
   "build": {
     "asar": true,
     "asarUnpack": [
-      "dist/sistema-visao-casquilhos/**/*"
+      "dist/sistema-visao-fpt/**/*"
     ],
     "files": [
-      "dist/sistema-visao-casquilhos/**/*",
+      "dist/sistema-visao-fpt/**/*",
       "main.js",
       "preload.js",
       "package.json"
